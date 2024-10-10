@@ -95,8 +95,8 @@ let localStorage = new LocalStorage('./scratch');
 const app = express();
 const server = http.createServer(app);
 
-
-const PORT = 3000;
+const HOST = '0.0.0.0';
+const PORT = 8080;
 
 const DS_NAME = 'news';
 const MONGO_URL = `mongodb://127.0.0.1:27017/${DS_NAME}?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.10`;
@@ -169,7 +169,7 @@ app.post("/sendQuery", async (req, res) => {
     res.redirect("/");
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, HOST, () => {
     console.log(`Server running on port ${PORT}`);
   });
 
