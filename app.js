@@ -96,7 +96,7 @@ const app = express();
 const server = http.createServer(app);
 
 const HOST = '0.0.0.0';
-const PORT = 8080;
+const PORT = '8080';
 
 const DS_NAME = 'news';
 const MONGO_URL = `mongodb://127.0.0.1:27017/${DS_NAME}?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.10`;
@@ -174,21 +174,33 @@ server.listen(PORT, HOST, () => {
   });
 
 const io = new Server(server);
-const ip = await publicIp();
+let ip = '0.0.0.0';
+try {
+    ip = await publicIp();
+} catch (error) {
+    console.error(error);
+}      
 console.log(`Server public IP is ${ip}`);
 
 localStorage.removeItem('users');
 
 // Handle socket traffic
 io.sockets.on('connection',  (socket) => {
-   
     let usersList = new Set([]);
     const ipinfo = new IPinfoWrapper("a9f2330adf554f");
 
-    ipinfo.lookupIp(ip).then((response) => {
-        let respo = JSON.stringify(response.city, null, 2)
-        localStorage.setItem('userlocal', respo)
-    });
+    let respo = 'New Delhi';
+    try {
+        if (ip !== '0.0.0.0') {
+            ipinfo.lookupIp(ip).then((response) => {
+                respo = JSON.stringify(response.city, null, 2)
+            });
+        }
+    } catch (error) {
+        console.error(error);
+    } 
+         
+    localStorage.setItem('userlocal', respo);
 
     // Set the nickname property for a given client
     socket.on('nick', (nick) => {
